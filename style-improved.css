@@ -102,7 +102,6 @@ textarea::placeholder {
 /* ===== Table Section ===== */
 #tableContainer {
   width: 100%;
-  padding: 1.5rem;
   overflow-x: auto;
   overflow-y: auto;
   max-height: 600px;
