@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON → Table Viewer</title>
+  <meta name="description" content="JSON 데이터를 테이블로 변환해주는 웹 애플리케이션">
+  <link rel="stylesheet" href="style-improved.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- 헤더 -->
+    <header>
+      <h1 style="font-weight: bold; font-size: 2em;">🐹JSON → Table Viewer🐹</h1>
+    </header>
+
+    <!-- 입력 영역 -->
+    <section class="input-section">
+      <textarea 
+        id="jsonInput" 
+        placeholder="JSON 데이터를 붙여넣으세요
+
+예시:
+[
+  {
+    &quot;name&quot;: &quot;김정의&quot;,
+    &quot;age&quot;: 25,
+    &quot;address&quot;: {
+      &quot;city&quot;: &quot;서울&quot;,
+      &quot;district&quot;: &quot;강남구&quot;
+    },
+    &quot;hobbies&quot;: [&quot;독서&quot;, &quot;운동&quot;]
+  }
+]"
+        rows="12"
+        spellcheck="false"
+      ></textarea>
+
+      <div class="button-container">
+        <button id="convertBtn">변환</button>
+        <button id="downloadExcelBtn">📥 Excel 다운로드</button>        
+        <div class="keyboard-hint">
+          Ctrl + Enter로 변환할 수 있습니다
+        </div>
+      </div>
+    </section>
+
+    <!-- 결과 영역 -->
+    <section class="result-section">
+      <div id="tableContainer">
+        <div class="no-data-message">
+          <p>📭 변환할 데이터가 없습니다.</p>
+          <p>위의 입력창에 JSON 데이터를 입력해주세요.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 스크립트 -->
+  <script src="script-improved.js"></script>
+</body>
+</html> 
