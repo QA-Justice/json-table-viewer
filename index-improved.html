@@ -4,61 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JSON → Table Viewer</title>
-  <meta name="description" content="JSON 데이터를 테이블로 변환해주는 웹 애플리케이션">
+  <meta name="description" content="A web application that converts JSON data into a table.">
   <link rel="stylesheet" href="style-improved.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <link rel="icon" type="image/png" href="./favicon-heart.png">
 </head>
 <body>
   <div class="container">
-    <!-- 헤더 -->
+    <!-- Header -->
     <header>
-      <h1 style="font-weight: bold; font-size: 2em;">🐹JSON → Table Viewer🐹</h1>
+      <h1 style="font-weight: bold; font-size: 2em; font-family: 'Pretendard', sans-serif;">🐹JSON → Table Viewer🐹</h1>
     </header>
 
-    <!-- 입력 영역 -->
-    <section class="input-section">
+    <!-- Input Section -->
+    <div class="input-section">
       <textarea 
         id="jsonInput" 
-        placeholder="JSON 데이터를 붙여넣으세요
-
-예시:
-[
-  {
-    &quot;name&quot;: &quot;김정의&quot;,
-    &quot;age&quot;: 25,
-    &quot;address&quot;: {
-      &quot;city&quot;: &quot;서울&quot;,
-      &quot;district&quot;: &quot;강남구&quot;
-    },
-    &quot;hobbies&quot;: [&quot;독서&quot;, &quot;운동&quot;]
-  }
-]"
+        placeholder="Paste your JSON data here."
         rows="12"
         spellcheck="false"
       ></textarea>
-
       <div class="button-container">
-        <button id="convertBtn">변환</button>
-        <button id="downloadExcelBtn">📥 Excel 다운로드</button>        
+        <input type="file" id="jsonFileInput" accept=".json,application/json" style="display:none;" />
+        <button id="fileUploadBtn" class="main-btn">📁 Upload File</button>
+        <button id="convertBtn" class="main-btn">Convert</button>
+        <button id="downloadExcelBtn" class="main-btn">📥 Download CSV</button>
         <div class="keyboard-hint">
-          Ctrl + Enter로 변환할 수 있습니다
+          You can press Ctrl + Enter to convert
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- 결과 영역 -->
+     <!-- Result Section -->
     <section class="result-section">
       <div id="tableContainer">
         <div class="no-data-message">
-          <p>📭 변환할 데이터가 없습니다.</p>
-          <p>위의 입력창에 JSON 데이터를 입력해주세요.</p>
+          <p>📭 No data to display.</p>
+          <p>Please paste JSON into the input area above.</p>
         </div>
       </div>
     </section>
   </div>
-
-  <!-- 스크립트 -->
+  
+  <!-- Script -->
   <script src="script-improved.js"></script>
 </body>
 </html> 

@@ -1,43 +1,44 @@
-/* JSON Table Viewer - Improved Styles */
-
-/* 기본 스타일 */
+/* ===== Global Base Styles ===== */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  padding: 20px;
-  background-color: #f7f7f7;
+  font-family: 'Pretendard', sans-serif;  font-size: 14px;
+  background-color: #f9fafb;
+  color: #1f2937;
   margin: 0;
+  padding: 1.5rem;
 }
 
-/* 메인 컨테이너 */
+/* ===== Container ===== */
 .container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
-/* 헤더 */
+/* ===== Header ===== */
 h1 {
   text-align: center;
+  padding: 1.5rem;
   margin: 0;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  font-size: 1.8em;
-  font-weight: 300;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 입력 영역 */
+/* ===== Input Section ===== */
 .input-section {
-  padding: 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  background-color: #f3f4f6;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 textarea {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: 'Pretendard', sans-serif;  font-size: 14px !important;
   font-size: 14px;
   line-height: 1.5;
   width: 100%;
@@ -50,176 +51,146 @@ textarea {
   transition: border-color 0.3s ease;
 }
 
+
 textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
 textarea::placeholder {
-  color: #adb5bd;
+  color: #9ca3af;
 }
 
-/* 버튼 스타일 */
-.button-container {
-  text-align: center;
-  margin-top: 15px;
-}
-
-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* ===== Buttons ===== */
+.main-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
-  border: none;
   padding: 10px 20px;
-  font-size: 14px;
+  border-radius: 8px;
   font-weight: 500;
-  border-radius: 6px;
+  font-size: 14px;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  margin-right: 8px;
 }
 
-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+.main-btn:hover {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
 }
 
-button:active {
+.main-btn:active {
   transform: translateY(0);
 }
 
-/* 다운로드 버튼 스타일 */
+/* ===== Button Group Container ===== */
+.button-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* ===== Upload/Download 버튼 리셋 ===== */
+.upload-btn,
 .download-btn {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  margin-left: 10px;
+  all: unset;
 }
 
-.download-btn:hover {
-  background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
-}
-
-/* 테이블 컨테이너 */
+/* ===== Table Section ===== */
 #tableContainer {
-  padding: 20px;
-  min-height: 200px;
+  width: 100%;
+  padding: 1.5rem;
   overflow-x: auto;
   overflow-y: auto;
   max-height: 600px;
 }
 
-/* 테이블 스타일 */
+/* ===== Table Styling ===== */
 .json-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  font-size: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  min-width: max-content;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-size: 13.5px;
 }
 
 .json-table th {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   padding: 12px 10px;
   text-align: left;
   font-weight: 600;
-  font-size: 13px;
-  border: 1px solid #e9ecef;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .json-table td {
   padding: 10px;
-  border: 1px solid #e9ecef;
-  vertical-align: top;
+  border-bottom: 1px solid #e5e7eb;
   word-break: break-word;
-  white-space: nowrap;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  vertical-align: top;
 }
 
-/* 행 스타일 */
-.json-table tbody tr {
-  transition: background-color 0.2s ease;
+/* Zebra rows */
+.json-table tr:nth-child(even) {
+  background-color: #f9fafb;
 }
 
+/* Hover effect */
 .json-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: #eef2ff;
 }
 
-.even-row {
-  background-color: #ffffff;
-}
-
-.odd-row {
-  background-color: #f8f9fa;
-}
-
-/* 셀 타입별 스타일 */
+/* ===== Cell Styles by Type ===== */
 .cell-null {
-  color: #adb5bd;
+  color: #9ca3af;
   font-style: italic;
 }
 
 .cell-boolean {
-  color: #28a745;
+  color: #16a34a;
   font-weight: 600;
 }
 
 .cell-number {
-  color: #007bff;
+  color: #2563eb;
   font-weight: 500;
 }
 
 .cell-string {
-  color: #6f42c1;
+  color: #7c3aed;
 }
 
 .cell-object {
-  color: #fd7e14;
-  font-family: monospace;
+  color: #d97706;
   font-size: 12px;
 }
 
-/* 데이터 없음 메시지 */
-.no-data-message {
-  text-align: center;
-  padding: 40px 20px;
-  color: #6c757d;
-}
-
-.no-data-message p {
-  margin: 10px 0;
-  font-size: 16px;
-}
-
-.no-data-message p:first-child {
-  font-size: 20px;
-  margin-bottom: 15px;
-}
-
-/* 알림 메시지 */
+/* ===== Notification (Toast Style) ===== */
 .notification {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 1.5rem;
+  right: 1.5rem;
   padding: 12px 16px;
-  border-radius: 6px;
-  color: white;
+  border-radius: 10px;
   font-weight: 500;
   z-index: 1000;
   animation: slideIn 0.3s ease;
-  max-width: 400px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 380px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  color: white;
 }
 
 .notification-success {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: linear-gradient(135deg, #22c55e, #10b981);
 }
 
 .notification-error {
-  background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+  background: linear-gradient(135deg, #ef4444, #f97316);
 }
 
 @keyframes slideIn {
@@ -233,66 +204,74 @@ button:active {
   }
 }
 
-/* 키보드 단축키 힌트 */
-.keyboard-hint {
-  font-size: 12px;
-  color: #6c757d;
+/* ===== Empty State Message ===== */
+.no-data-message {
   text-align: center;
-  margin-top: 8px;
-  font-style: italic;
+  padding: 2.5rem;
+  color: #6b7280;
 }
 
-/* 반응형 디자인 */
+.no-data-message p:first-child {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.no-data-message p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ===== Keyboard Hint ===== */
+.keyboard-hint {
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+  color: #9ca3af;
+  margin-top: 10px;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   body {
-    padding: 10px;
+    padding: 1rem;
   }
-  
+
   h1 {
-    font-size: 1.5em;
-    padding: 15px;
+    font-size: 1.5rem;
   }
-  
-  .input-section {
-    padding: 15px;
+
+  textarea {
+    font-size: 13px;
   }
-  
-  #tableContainer {
-    padding: 15px;
-  }
-  
+
   .json-table {
     font-size: 12px;
   }
-  
-  .json-table th,
-  .json-table td {
-    padding: 8px 6px;
-  }
-  
+
   .notification {
-    right: 10px;
-    left: 10px;
-    max-width: none;
+    left: 1rem;
+    right: 1rem;
+    max-width: 100%;
   }
 }
 
-/* 스크롤바 스타일 */
+/* ===== Scrollbar ===== */
 #tableContainer::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 #tableContainer::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f3f4f6;
   border-radius: 4px;
 }
 
 #tableContainer::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 #tableContainer::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-} 
+  background: #94a3b8;
+}
