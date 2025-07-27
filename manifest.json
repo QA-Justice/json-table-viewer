@@ -3,6 +3,9 @@
   "version": "1.0",
   "manifest_version": 3,
   "permissions": ["sidePanel"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_title": "Open JSON Table Viewer",
     "default_icon": {
