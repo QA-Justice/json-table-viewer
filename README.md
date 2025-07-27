@@ -184,4 +184,8 @@ Feel free to open an issue if you have suggestions or questions.
 
 ---
 
-⭐ If you found this helpful, please consider starring the project!
+## ☕ Support
+
+If you find this project useful, you can support me here:
+
+[![Buy Me a Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/justice_tia)
