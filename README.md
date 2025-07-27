@@ -188,4 +188,8 @@ Feel free to open an issue if you have suggestions or questions.
 
 If you find this project useful, you can support me here:
 
-[![Buy Me a Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/justice_tia)
+<p align="left">
+  <a href="https://buymeacoffee.com/justice_tia" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" width="120" />
+  </a>
+</p>
