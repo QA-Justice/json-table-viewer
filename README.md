@@ -53,9 +53,6 @@ json-table-viewer/
 ├── index-improved.html      # Main HTML file
 ├── script-improved.js       # Core JS logic
 ├── style-improved.css       # Styling
-├── index.html               # Legacy version (optional)
-├── script.js                # Legacy version (optional)
-├── style.css                # Legacy version (optional)
 └── manifest.json            # Chrome extension config
 ```
 
@@ -94,13 +91,6 @@ flattenObject(obj, prefix = '', result = {}) {
 - **Array**: `hobbies[0]`, `hobbies[1]`
 - **Mixed**: `user.profile.settings[0].value`
 
-## 🎨 UI/UX
-
-- **Clean Design**: Simple and modern interface
-- **Responsive Layout**: Works on both mobile and desktop
-- **Type Coloring**: Visual distinction of data types
-- **Hover Effects**: Interactivity on rows and buttons
-- **Notifications**: Success and error alerts
 
 ## 🔍 Supported Data Types
 
@@ -112,53 +102,6 @@ flattenObject(obj, prefix = '', result = {}) {
 | string  | "text"    | purple |
 | object  | {"key":"value"} | orange (monospace) |
 
-## 🛠 Development Setup
-
-1. Clone the project:
-```bash
-git clone https://github.com/your-username/json-table-viewer.git
-cd json-table-viewer
-```
-
-2. Serve locally:
-```bash
-# Python 3
-python -m http.server 8000
-
-# or Node.js
-npx http-server
-```
-
-3. Visit `http://localhost:8000/index-improved.html` in your browser
-
-## 🧩 Chrome Extension Usage
-
-1. Open `chrome://extensions/` in Chrome.
-2. Enable **Developer Mode**.
-3. Click **Load unpacked extension**.
-4. Select the project folder.
-5. Open via extension icon in toolbar.
-
-## 🧪 Customization
-
-### CSS Theme
-```css
-.json-table th {
-  background: linear-gradient(135deg, #your-color, #your-color2);
-}
-
-.cell-number {
-  color: #your-number-color;
-}
-```
-
-### Add More Cell Types
-```js
-getCellClassName(value) {
-  if (typeof value === 'date') return 'cell-date';
-  // ... existing logic
-}
-```
 
 ## 🐛 Troubleshooting
 
