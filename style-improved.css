@@ -274,3 +274,31 @@ textarea::placeholder {
 #tableContainer::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* 
+   Buy Me a Coffee Section
+*/
+.donate-container {
+  text-align: center;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+.donate-btn {
+  background-color: #fdd835;
+  color: #000;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+  transition: all var(--transition-normal);
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1);
+}
+
+.donate-btn:hover {
+  background-color: #ffe066;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 0.15);
+}
