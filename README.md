@@ -1,6 +1,19 @@
-# JSON → Table Viewer
+# JSON → Table Viewer – Chrome Extension
 
-A lightweight and efficient web application that automatically converts JSON data into a table and enables CSV download.
+A web application that automatically converts JSON data into a table and enables CSV download.  
+Especially useful for deeply nested, irregular, or array-heavy JSON structures that are hard to inspect manually.  
+You can paste your JSON or import a file.
+
+---
+
+중첩된 구조나 배열이 많고 key가 불규칙한 JSON 데이터를 표 형태로 변환해주는 크롬 확장 앱입니다.  
+JSON을 복사해서 붙여넣거나 파일로 import해서 표로 변환할 수 있고, 표를 CSV로 저장할 수 있어요.
+
+
+---
+
+![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)  
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 ## ✨ Features
 
@@ -11,13 +24,12 @@ A lightweight and efficient web application that automatically converts JSON dat
 - **Type Coloring**: Highlights `null`, `boolean`, `number`, `string`, and `object` types.
 - **Keyboard Shortcut**: Press Ctrl+Enter to convert.
 
-## 🚀 How to Use
+## 🚀 Installation
 
-1. Open `index-improved.html` in your browser.
-2. Paste JSON into the input area.
-3. Click the **Convert** button or press Ctrl+Enter.
-4. View the generated table.
-5. Click **📥 Download CSV** to save the file.
+1. Go to `chrome://extensions`  
+2. Enable **Developer Mode** (top right)  
+3. Click **Load unpacked** → select `json-table-viewer/` folder  
+4. Click the json-table-viewer icon → side panel opens
 
 ## 📋 Example
 
@@ -121,15 +133,12 @@ flattenObject(obj, prefix = '', result = {}) {
 
 Distributed under the MIT License.
 
-## 📫 Contact
-
-Feel free to open an issue if you have suggestions or questions.
 
 ---
 
 ## ☕ Support
 
-If you find this project useful, you can support me here:
+If you find this project useful, you can support me here 😋
 
 <p align="left">
   <a href="https://buymeacoffee.com/justice_tia" target="_blank">
