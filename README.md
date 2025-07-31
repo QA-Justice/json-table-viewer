@@ -1,7 +1,7 @@
 # JSON → Table Viewer – Chrome Extension
 
 A web application that automatically converts JSON data into a table and enables CSV download.  
-Especially useful for deeply nested, irregular, or array-heavy JSON structures that are hard to inspect manually.  
+Useful for deeply nested, irregular, or array-heavy JSON structures that are hard to inspect manually.  
 You can paste your JSON or import a file.
 
 ---
@@ -12,7 +12,7 @@ JSON을 복사해서 붙여넣거나 파일로 import해서 표로 변환할 수
 
 ---
 
-![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)  
+![Version](https://img.shields.io/badge/Version-1.1-orange.svg)  
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 ## ✨ Features
