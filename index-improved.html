@@ -18,17 +18,28 @@
 
     <!-- Input Section -->
     <div class="input-section">
-      <textarea 
-        id="jsonInput" 
-        placeholder="Paste your JSON data here."
-        rows="12"
-        spellcheck="false"
-      ></textarea>
+      <div class="textarea-container">
+        <button id="resetBtn" class="reset-btn" title="Reset to sample JSON">↺ Reset</button>
+        <textarea 
+          id="jsonInput" 
+          placeholder="Paste your JSON data here."
+          rows="12"
+          spellcheck="false"
+        ></textarea>
+      </div>
       <div class="button-container">
         <input type="file" id="jsonFileInput" accept=".json,application/json" style="display:none;" />
-        <button id="fileUploadBtn" class="main-btn">📁 Upload File</button>
-        <button id="convertBtn" class="main-btn">Convert</button>
-        <button id="downloadExcelBtn" class="main-btn">📥 Download CSV</button>
+        <button id="fileUploadBtn" class="main-btn">📁 Upload</button>
+        <button id="convertBtn" class="main-btn">✨Convert</button>
+        <button id="downloadExcelBtn" class="main-btn">📥 CSV</button>
+        <div class="dropdown-container">
+          <button id="copyToClipboardBtn" class="main-btn dropdown-trigger">📋 Copy ▼</button>
+          <div id="copyOptions" class="dropdown-menu">
+            <button class="dropdown-item" data-format="markdown">Markdown</button>
+            <button class="dropdown-item" data-format="text">Text</button>
+          </div>
+        </div>
+        <button id="pivotBtn" class="main-btn">🔄 Pivot</button>
         <div class="keyboard-hint">
           You can press Ctrl + Enter to convert
         </div>

@@ -28,7 +28,9 @@ const CONSTANTS = {
     FILE_READ_ERROR: 'An error occurred while reading the file.',
     CSV_DOWNLOAD_ERROR: 'No data to download. Please convert JSON first.',
     CSV_DOWNLOAD_SUCCESS: '📥 CSV file downloaded successfully!',
-    CONVERSION_SUCCESS: '✅ Conversion successful!'
+    CONVERSION_SUCCESS: '✅ Conversion successful!',
+    CLIPBOARD_SUCCESS: '📋 Data copied to clipboard successfully!',
+    CLIPBOARD_ERROR: 'Failed to copy to clipboard. Please try manually selecting and copying.'
   },
   EVENTS: {
     CLICK: 'click',
@@ -40,11 +42,14 @@ const CONSTANTS = {
 class JSONTableConverter {
   constructor() {
     this.currentData = null;
+    this.pivotedData = null;
+    this.isPivoted = false;
     this.initializeEventListeners();
   }
 
   // 이벤트 리스너 초기화
   initializeEventListeners() {
+    this.setSampleJSON(); // 샘플 JSON 설정
     this.bindConvertButton();
     this.bindKeyboardShortcut();
     this.bindFileUpload();
@@ -92,11 +97,39 @@ class JSONTableConverter {
 
   // 다운로드 버튼 이벤트 바인딩
   bindDownloadButton() {
-    document.addEventListener(CONSTANTS.EVENTS.CLICK, (e) => {
+    // 기존 이벤트 리스너 제거 (중복 방지)
+    document.removeEventListener(CONSTANTS.EVENTS.CLICK, this.handleGlobalClick);
+    document.removeEventListener('click', this.handleOutsideClick);
+    
+    // 새로운 이벤트 리스너 등록
+    this.handleGlobalClick = (e) => {
       if (e.target.matches(CONSTANTS.SELECTORS.DOWNLOAD_BTN)) {
         this.downloadCSV();
       }
-    });
+      if (e.target.matches('#copyToClipboardBtn')) {
+        this.toggleCopyOptions();
+      }
+             if (e.target.matches('.dropdown-item')) {
+         const format = e.target.dataset.format;
+         this.copyToClipboard(format);
+         this.hideCopyOptions();
+       }
+      if (e.target.matches('#pivotBtn')) {
+        this.togglePivot();
+      }
+      if (e.target.matches('#resetBtn')) {
+        this.resetToSample();
+      }
+    };
+
+    this.handleOutsideClick = (e) => {
+      if (!e.target.closest('.dropdown-container')) {
+        this.hideCopyOptions();
+      }
+    };
+
+    document.addEventListener(CONSTANTS.EVENTS.CLICK, this.handleGlobalClick);
+    document.addEventListener('click', this.handleOutsideClick);
   }
 
   // 파일 업로드 처리
@@ -138,7 +171,10 @@ class JSONTableConverter {
     try {
       const flattened = this.parseAndFlatten(input);
       this.currentData = flattened;
+      this.pivotedData = null;
+      this.isPivoted = false;
       this.renderTable(flattened);
+      this.updatePivotButton();
       this.showSuccess(`${CONSTANTS.MESSAGES.CONVERSION_SUCCESS} (${flattened.length} rows)`);
     } catch (err) {
       this.showError(`⚠️ JSON parse error: ${err.message}`);
@@ -149,6 +185,69 @@ class JSONTableConverter {
   getJsonInput() {
     const jsonInput = document.querySelector(CONSTANTS.SELECTORS.JSON_INPUT);
     return jsonInput ? jsonInput.value.trim() : '';
+  }
+
+  // 샘플 JSON 설정
+  setSampleJSON() {
+    const jsonInput = document.querySelector(CONSTANTS.SELECTORS.JSON_INPUT);
+    if (jsonInput && !jsonInput.value.trim()) {
+      jsonInput.value = this.getSampleJSON();
+    }
+  }
+
+  // 샘플 JSON 반환
+  getSampleJSON() {
+    return `[
+  {
+    "name": "John Doe",
+    "age": 30,
+    "email": "john@example.com",
+    "active": true,
+    "scores": [85, 92, 78],
+    "address": {
+      "street": "123 Main St",
+      "city": "New York",
+      "zip": "10001"
+    }
+  },
+  {
+    "name": "Jane Smith",
+    "age": 25,
+    "email": "jane@example.com",
+    "active": false,
+    "scores": [90, 88, 95],
+    "address": {
+      "street": "456 Oak Ave",
+      "city": "Los Angeles",
+      "zip": "90210"
+    }
+  },
+  {
+    "name": "Bob Johnson",
+    "age": 35,
+    "email": "bob@example.com",
+    "active": true,
+    "scores": [75, 82, 88],
+    "address": {
+      "street": "789 Pine Rd",
+      "city": "Chicago",
+      "zip": "60601"
+    }
+  }
+]`;
+  }
+
+  // 샘플 JSON으로 초기화
+  resetToSample() {
+    const jsonInput = document.querySelector(CONSTANTS.SELECTORS.JSON_INPUT);
+    if (jsonInput) {
+      jsonInput.value = this.getSampleJSON();
+      this.currentData = null;
+      this.pivotedData = null;
+      this.isPivoted = false;
+      this.renderTable([]);
+      this.updatePivotButton();
+    }
   }
 
   // JSON 객체 평면화
@@ -182,7 +281,7 @@ class JSONTableConverter {
 
   // 객체 속성 평면화
   flattenObjectProperties(obj, prefix, result) {
-    const keys = Object.keys(obj);
+    const keys = Reflect.ownKeys(obj);
     if (keys.length === 0) {
       result[prefix] = '{}';
     } else {
@@ -222,11 +321,31 @@ class JSONTableConverter {
 
     const table = this.createTable(dataArray);
     container.appendChild(table);
+    
+    // Pivot 상태에 따라 컨테이너 클래스 추가/제거
+    if (this.isPivoted) {
+      container.classList.add('pivoted');
+    } else {
+      container.classList.remove('pivoted');
+    }
   }
 
   // 테이블 생성
   createTable(dataArray) {
-    const allKeys = this.getAllKeys(dataArray);
+    // Pivot 테이블인 경우 순서대로 키 생성
+    let allKeys;
+    if (this.isPivoted) {
+      // Pivot 테이블의 경우 Field + Row 1, Row 2, Row 3... 순서로 키 생성
+      // 원본 데이터의 행 개수를 사용하여 Row 키 생성
+      const originalRowCount = this.currentData ? this.currentData.length : 0;
+      allKeys = ['Field'];
+      for (let i = 1; i <= originalRowCount; i++) {
+        allKeys.push(`Row ${i}`);
+      }
+    } else {
+      allKeys = this.getAllKeys(dataArray);
+    }
+    
     const table = document.createElement('table');
     table.className = CONSTANTS.CLASSES.JSON_TABLE;
 
@@ -243,9 +362,36 @@ class JSONTableConverter {
   getAllKeys(dataArray) {
     const keySet = new Set();
     dataArray.forEach(obj => {
-      Object.keys(obj).forEach(key => keySet.add(key));
+      Reflect.ownKeys(obj).forEach(key => keySet.add(key));
     });
-    return Array.from(keySet).sort();
+    
+    const keys = Array.from(keySet);
+    return keys; // 원본 순서 그대로 반환
+  }
+
+  // 키를 자연수 순서로 정렬 (숫자 키는 숫자 순서, 문자열 키는 사전순)
+  sortKeysNaturally(keys) {
+    return keys.sort((a, b) => {
+      // 숫자 키인지 확인 (예: [0], [1], [10] 등)
+      const aIsNumber = /^\[\d+\]$/.test(a);
+      const bIsNumber = /^\[\d+\]$/.test(b);
+      
+      if (aIsNumber && bIsNumber) {
+        // 둘 다 숫자 키인 경우 숫자 순서로 정렬
+        const aNum = parseInt(a.match(/\d+/)[0]);
+        const bNum = parseInt(b.match(/\d+/)[0]);
+        return aNum - bNum;
+      } else if (aIsNumber) {
+        // a만 숫자 키인 경우 a를 앞으로
+        return -1;
+      } else if (bIsNumber) {
+        // b만 숫자 키인 경우 b를 앞으로
+        return 1;
+      } else {
+        // 둘 다 문자열 키인 경우 사전순 정렬
+        return a.localeCompare(b);
+      }
+    });
   }
 
   // 테이블 헤더 생성
@@ -313,17 +459,21 @@ class JSONTableConverter {
 
   // CSV 다운로드
   downloadCSV() {
-    if (!this.currentData || this.currentData.length === 0) {
+    const dataToExport = this.isPivoted ? this.pivotedData : this.currentData;
+    
+    if (!dataToExport || dataToExport.length === 0) {
       this.showError(CONSTANTS.MESSAGES.CSV_DOWNLOAD_ERROR);
       return;
     }
 
     try {
-      const csvContent = this.convertToCSV(this.currentData);
+      const csvContent = this.convertToCSV(dataToExport);
+      const fileName = `json-table-${new Date().toISOString().slice(0, 10)}.csv`;
+      
       const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `json-table-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -339,7 +489,19 @@ class JSONTableConverter {
       return '';
     }
     
-    const allKeys = this.getAllKeys(dataArray);
+    // Pivot 테이블인 경우 순서대로 키 생성
+    let allKeys;
+    if (this.isPivoted) {
+      // 원본 데이터의 행 개수를 사용하여 Row 키 생성
+      const originalRowCount = this.currentData ? this.currentData.length : 0;
+      allKeys = ['Field'];
+      for (let i = 1; i <= originalRowCount; i++) {
+        allKeys.push(`Row ${i}`);
+      }
+    } else {
+      allKeys = this.getAllKeys(dataArray);
+    }
+    
     const headers = allKeys.map(key => this.escapeCSVField(key)).join(',');
     const rows = dataArray.map(row => {
       return allKeys.map(key => {
@@ -369,6 +531,226 @@ class JSONTableConverter {
     }
     
     return stringField;
+  }
+
+  // Copy 옵션 토글
+  toggleCopyOptions() {
+    const copyOptions = document.getElementById('copyOptions');
+    const isVisible = copyOptions.classList.contains('show');
+    
+    if (isVisible) {
+      this.hideCopyOptions();
+    } else {
+      this.showCopyOptions();
+    }
+  }
+
+  // Copy 옵션 보이기
+  showCopyOptions() {
+    const copyOptions = document.getElementById('copyOptions');
+    copyOptions.classList.add('show');
+    this.updateCopyButtonArrow();
+  }
+
+  // Copy 옵션 숨기기
+  hideCopyOptions() {
+    const copyOptions = document.getElementById('copyOptions');
+    copyOptions.classList.remove('show');
+    this.updateCopyButtonArrow();
+  }
+
+  // 클립보드에 복사
+  async copyToClipboard(format = 'markdown') {
+    const dataToCopy = this.isPivoted ? this.pivotedData : this.currentData;
+    
+    if (!dataToCopy || dataToCopy.length === 0) {
+      this.showError('No data to copy. Please convert JSON first.');
+      return;
+    }
+
+    try {
+      let content;
+      if (format === 'markdown') {
+        content = this.convertToMarkdown(dataToCopy);
+      } else {
+        content = this.convertToText(dataToCopy);
+      }
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        // 모던 브라우저 (HTTPS 환경)
+        await navigator.clipboard.writeText(content);
+        this.showSuccess(`${CONSTANTS.MESSAGES.CLIPBOARD_SUCCESS} (${format})`);
+      } else {
+        // 구형 브라우저 fallback
+        this.fallbackCopyToClipboard(content);
+      }
+    } catch (error) {
+      this.showError(`Failed to copy to clipboard: ${error.message}`);
+    }
+  }
+
+  // 구형 브라우저용 클립보드 복사 fallback
+  fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        this.showSuccess(CONSTANTS.MESSAGES.CLIPBOARD_SUCCESS);
+      } else {
+        this.showError(CONSTANTS.MESSAGES.CLIPBOARD_ERROR);
+      }
+    } catch (err) {
+      this.showError(CONSTANTS.MESSAGES.CLIPBOARD_ERROR);
+    }
+    
+    document.body.removeChild(textArea);
+  }
+
+  // Markdown 테이블 변환
+  convertToMarkdown(dataArray) {
+    if (!dataArray || dataArray.length === 0) {
+      return '';
+    }
+    
+    // Pivot 테이블인 경우 순서대로 키 생성
+    let allKeys;
+    if (this.isPivoted) {
+      // 원본 데이터의 행 개수를 사용하여 Row 키 생성
+      const originalRowCount = this.currentData ? this.currentData.length : 0;
+      allKeys = ['Field'];
+      for (let i = 1; i <= originalRowCount; i++) {
+        allKeys.push(`Row ${i}`);
+      }
+    } else {
+      allKeys = this.getAllKeys(dataArray);
+    }
+    
+    // 헤더 행
+    const headers = allKeys.map(key => `| ${key} `).join('') + '|';
+    
+    // 구분선 행
+    const separator = allKeys.map(() => '| --- ').join('') + '|';
+    
+    // 데이터 행들
+    const rows = dataArray.map(row => {
+      return allKeys.map(key => {
+        const value = row[key] ?? '';
+        const formattedValue = this.formatCellValue(value);
+        // Markdown에서 파이프 문자 이스케이프
+        const escapedValue = formattedValue.replace(/\|/g, '\\|');
+        return `| ${escapedValue} `;
+      }).join('') + '|';
+    });
+    
+    return [headers, separator, ...rows].join('\n');
+  }
+
+  // Text 테이블 변환 (탭으로 구분)
+  convertToText(dataArray) {
+    if (!dataArray || dataArray.length === 0) {
+      return '';
+    }
+    
+    // Pivot 테이블인 경우 순서대로 키 생성
+    let allKeys;
+    if (this.isPivoted) {
+      // 원본 데이터의 행 개수를 사용하여 Row 키 생성
+      const originalRowCount = this.currentData ? this.currentData.length : 0;
+      allKeys = ['Field'];
+      for (let i = 1; i <= originalRowCount; i++) {
+        allKeys.push(`Row ${i}`);
+      }
+    } else {
+      allKeys = this.getAllKeys(dataArray);
+    }
+    
+    const headers = allKeys.join('\t');
+    const rows = dataArray.map(row => {
+      return allKeys.map(key => {
+        const value = row[key] ?? '';
+        return this.formatCellValue(value);
+      }).join('\t');
+    });
+    
+    return [headers, ...rows].join('\n');
+  }
+
+  // Pivot 토글
+  togglePivot() {
+    if (!this.currentData || this.currentData.length === 0) {
+      this.showError('No data to pivot. Please convert JSON first.');
+      return;
+    }
+
+    if (this.isPivoted) {
+      // 원래 테이블로 되돌리기
+      this.isPivoted = false;
+      this.pivotedData = null;
+      this.renderTable(this.currentData);
+      this.updatePivotButton();
+    } else {
+      // Pivot 테이블로 변환
+      this.isPivoted = true;
+      this.pivotedData = this.createPivotTable(this.currentData);
+      this.renderTable(this.pivotedData);
+      this.updatePivotButton();
+    }
+  }
+
+  // Pivot 테이블 생성
+  createPivotTable(dataArray) {
+    if (!dataArray || dataArray.length === 0) return [];
+
+    // 모든 키 수집
+    const allKeys = this.getAllKeys(dataArray);
+    
+    // 첫 번째 행을 헤더로 사용
+    const pivotData = [];
+    
+    // 각 키를 행으로 변환
+    allKeys.forEach(key => {
+      const row = {
+        Field: key
+      };
+      
+      // 각 데이터 행의 값을 컬럼으로 변환
+      for (let i = 0; i < dataArray.length; i++) {
+        const value = dataArray[i][key] ?? '';
+        row[`Row ${i + 1}`] = value;
+      }
+      
+      pivotData.push(row);
+    });
+
+    return pivotData;
+  }
+
+
+
+  // Pivot 버튼 텍스트 업데이트
+  updatePivotButton() {
+    const pivotBtn = document.querySelector('#pivotBtn');
+    if (pivotBtn) {
+      pivotBtn.textContent = this.isPivoted ? '🔄 Restore' : '🔄 Pivot';
+    }
+  }
+
+  // Copy 버튼 화살표 업데이트
+  updateCopyButtonArrow() {
+    const copyBtn = document.querySelector('#copyToClipboardBtn');
+    if (copyBtn) {
+      const copyOptions = document.getElementById('copyOptions');
+      const isVisible = copyOptions.classList.contains('show');
+      copyBtn.innerHTML = isVisible ? '📋 Copy ▲' : '📋 Copy ▼';
+    }
   }
 
   // 성공 알림

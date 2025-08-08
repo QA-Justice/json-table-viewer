@@ -12,17 +12,21 @@ JSON을 복사해서 붙여넣거나 파일로 import해서 표로 변환할 수
 
 ---
 
-![Version](https://img.shields.io/badge/Version-1.1-orange.svg)  
+![Version](https://img.shields.io/badge/Version-1.1.1-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 ## ✨ Features
 
 - **JSON Flattening**: Automatically converts nested objects/arrays into a flat structure.
-- **Preserves Structure**: Reflects JSON hierarchy in column names (`address.city`, `hobbies[0]`, etc.)
+- **Preserves Original Order**: Maintains the original key order from your JSON input.
 - **Live Conversion**: Converts JSON instantly upon input.
 - **CSV Download**: Save the converted table as a CSV file.
+- **Table Pivot**: Transpose rows and columns for different data perspectives.
+- **Clipboard Copy**: Copy table data as Markdown or plain text format.
 - **Type Coloring**: Highlights `null`, `boolean`, `number`, `string`, and `object` types.
 - **Keyboard Shortcut**: Press Ctrl+Enter to convert.
+- **Sample Data**: Pre-loaded sample JSON for quick testing.
+- **Reset Function**: One-click reset to sample data.
 
 ## 🚀 Installation
 
@@ -58,6 +62,21 @@ JSON을 복사해서 붙여넣거나 파일로 import해서 표로 변환할 수
 | Kim  | 25  | Seoul        | Gangnam          | Reading    | Workout    |
 | Lee  | 30  | Busan        | Haeundae         | Movies     | Cooking    |
 
+### Pivoted Table View
+
+| Field | Row 1 | Row 2 |
+|-------|-------|-------|
+| name | Kim | Lee |
+| age | 25 | 30 |
+| address.city | Seoul | Busan |
+| address.district | Gangnam | Haeundae |
+| hobbies[0] | Reading | Movies |
+| hobbies[1] | Workout | Cooking |
+
+### Copy Options
+- **Markdown**: Perfect for documentation and GitHub README files
+- **Plain Text**: Tab-separated format for Excel/Google Sheets import
+
 ## 📁 Project Structure
 
 ```
@@ -85,7 +104,7 @@ flattenObject(obj, prefix = '', result = {}) {
       flattenObject(item, `${prefix}[${index}]`, result);
     });
   } else if (typeof obj === 'object') {
-    Object.keys(obj).forEach(key => {
+    Reflect.ownKeys(obj).forEach(key => {  // Preserves original order
       const newPrefix = prefix ? `${prefix}.${key}` : key;
       flattenObject(obj[key], newPrefix, result);
     });
@@ -103,6 +122,10 @@ flattenObject(obj, prefix = '', result = {}) {
 - **Array**: `hobbies[0]`, `hobbies[1]`
 - **Mixed**: `user.profile.settings[0].value`
 
+### Key Order Preservation
+
+The application maintains the original key order from your JSON input using `Reflect.ownKeys()` instead of `Object.keys()`, ensuring that the table columns appear in the same order as defined in your JSON structure.
+
 
 ## 🔍 Supported Data Types
 
@@ -113,6 +136,13 @@ flattenObject(obj, prefix = '', result = {}) {
 | number  | 123       | blue   |
 | string  | "text"    | purple |
 | object  | {"key":"value"} | orange (monospace) |
+
+## 📋 Export Options
+
+- **CSV Download**: Standard comma-separated values format with proper UTF-8 encoding
+- **Markdown Copy**: Table format suitable for documentation with proper escaping
+- **Plain Text Copy**: Tab-separated values for easy spreadsheet import
+- **Clipboard Integration**: Modern clipboard API with fallback for older browsers
 
 
 ## 🐛 Troubleshooting
@@ -125,9 +155,14 @@ flattenObject(obj, prefix = '', result = {}) {
 - Ensure JSON is valid and non-empty.
 - Check for JS console errors.
 
+### Pivot Issues
+- Pivot functionality works best with consistent data structures.
+- Large datasets may experience performance delays during pivot operations.
+
 ### Performance Issues
 - Large data (10,000+ rows) may cause slowness.
 - Consider chunking or lazy rendering.
+- Pivot operations on wide tables may require horizontal scrolling.
 
 ## 📝 License
 
