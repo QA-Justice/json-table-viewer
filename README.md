@@ -235,14 +235,6 @@ The application maintains the original key order from your JSON input using `Ref
 
 ## 🐛 Troubleshooting
 
-### JSON Parse Errors
-- Check for missing commas, quotes, or brackets.
-- Use browser devtools console (F12) to debug.
-
-### Table Not Showing
-- Ensure JSON is valid and non-empty.
-- Check for JS console errors.
-
 ### Pivot Issues
 - Pivot functionality works best with consistent data structures.
 - Large datasets may experience performance delays during pivot operations.
