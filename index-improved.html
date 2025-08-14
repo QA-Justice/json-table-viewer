@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JSON → Table Viewer</title>
-  <meta name="description" content="A web application that converts JSON data into a table.">
-  <link rel="stylesheet" href="style-improved.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
-  <link rel="icon" type="image/png" href="./favicon-star.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON → Table Viewer</title>
+    <meta name="description" content="A web application that converts JSON data into a table.">
+    <link rel="stylesheet" href="style-improved.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+    <link rel="icon" type="image/png" href="./favicon-star.png">
 </head>
 <body>
   <div class="container">
@@ -41,7 +41,7 @@
         </div>
         <button id="pivotBtn" class="main-btn">🔄 Pivot</button>
         <div class="keyboard-hint">
-          You can press Ctrl + Enter to convert
+          You can press Ctrl + F to search
         </div>
       </div>
     </div>
@@ -63,6 +63,7 @@
   </div>
   </div>
   <!-- Script -->
-  <script src="script-improved.js"></script>
+  <script type="module" src="script-improved.js"></script>
+  <script src="search-content.js"></script>
 </body>
 </html> 
