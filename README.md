@@ -12,7 +12,7 @@ JSON을 복사해서 붙여넣거나 파일로 import해서 표로 변환할 수
 
 ---
 
-![Version](https://img.shields.io/badge/Version-1.1.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.2.0-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 ## ✨ Features
