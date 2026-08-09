@@ -15,7 +15,47 @@ export class UIManager {
     this.bindKeyboardShortcut();
     this.bindFileUpload();
     this.bindGlobalEvents();
+    this.initLineNumbers();
     this.autoFocusInput();
+  }
+
+  // 편집기 라인 넘버 거터 — 입력/스크롤에 맞춰 갱신·동기화
+  initLineNumbers() {
+    const ta = DOMUtils.getElement('#jsonInput');
+    const ln = DOMUtils.getElement('#lineNumbers');
+    if (!ta || !ln) return;
+
+    const render = () => {
+      const count = ta.value.split('\n').length || 1;
+      let s = '';
+      for (let i = 1; i <= count; i++) s += i + '\n';
+      ln.textContent = s;
+      ln.scrollTop = ta.scrollTop;
+    };
+
+    ta.addEventListener('input', render);
+    ta.addEventListener('scroll', () => { ln.scrollTop = ta.scrollTop; });
+    this.renderLineNumbers = render; // 값을 코드로 바꾼 뒤 수동 갱신용
+    render();
+  }
+
+  // 파싱 에러 위치(position N)로 커서를 옮기고 그 줄을 화면에 노출
+  focusErrorPosition(error) {
+    const message = (error && error.message) || '';
+    const match = /position (\d+)/.exec(message);
+    if (!match) return;
+    const pos = parseInt(match[1], 10);
+
+    DOMUtils.safeDOMOperation('#jsonInput', (ta) => {
+      const end = Math.min(pos + 1, ta.value.length);
+      ta.focus();
+      ta.setSelectionRange(pos, end); // 문제 글자를 선택 표시
+      // 해당 줄을 세로 중앙으로 스크롤
+      const line = ta.value.slice(0, pos).split('\n').length - 1;
+      const lineHeight = parseFloat(getComputedStyle(ta).lineHeight) || 20;
+      ta.scrollTop = Math.max(0, line * lineHeight - ta.clientHeight / 2);
+      if (this.renderLineNumbers) this.renderLineNumbers();
+    });
   }
 
   // 입력창 자동 포커스
@@ -125,6 +165,7 @@ export class UIManager {
       this.initializeSearchAfterTableCreation();
       NotificationManager.showSuccess(`✅ Conversion successful! (${flattened.length} rows)`);
     } catch (error) {
+      this.focusErrorPosition(error);
       NotificationManager.showError(`⚠️ JSON parse error: ${error.message}`);
     }
   }
@@ -147,6 +188,7 @@ export class UIManager {
         const text = event.target.result;
         DOMUtils.safeDOMOperation('#jsonInput', (jsonInput) => {
           jsonInput.value = text;
+          if (this.renderLineNumbers) this.renderLineNumbers();
           this.handleConvert();
         });
       } catch (error) {
@@ -184,6 +226,7 @@ export class UIManager {
   resetToSample() {
     DOMUtils.safeDOMOperation('#jsonInput', (jsonInput) => {
       jsonInput.value = this.dataProcessor.getSampleJSON();
+      if (this.renderLineNumbers) this.renderLineNumbers();
       this.resetTableToInitialState();
     });
   }
