@@ -15,6 +15,33 @@ export class UIManager {
     this.bindKeyboardShortcut();
     this.bindFileUpload();
     this.bindGlobalEvents();
+    this.autoFocusInput();
+  }
+
+  // 입력창 자동 포커스
+  // 사이드패널을 새 탭(주소창이 자동 포커스된 상태)에서 열면 붙여넣기가 textarea가 아니라
+  // 브라우저 URL창으로 가는 문제가 있다. 패널이 로드되거나 다시 보일 때 입력창에 포커스를 준다.
+  autoFocusInput() {
+    const focusInput = () => {
+      DOMUtils.safeDOMOperation('#jsonInput', (jsonInput) => {
+        const active = document.activeElement;
+        // 사용자가 이미 다른 입력요소(예: 검색창)에 있으면 포커스를 뺏지 않는다
+        const inAnotherField =
+          active && active !== jsonInput &&
+          (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+        if (inAnotherField) return;
+        // window.focus()로 패널 창 자체를 활성화한 뒤 입력창에 포커스
+        window.focus();
+        jsonInput.focus();
+      });
+    };
+
+    focusInput();
+    // 패널이 다시 보이거나 창이 포커스를 받을 때 재시도
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) focusInput();
+    });
+    window.addEventListener('focus', focusInput);
   }
 
   // 변환 버튼 이벤트 바인딩
