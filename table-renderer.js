@@ -67,6 +67,7 @@ export class TableRenderer {
         const td = DOMUtils.createElement('td');
         const value = row[key] ?? '';
         td.textContent = DataUtils.formatCellValue(value);
+        td.title = td.textContent;
         td.className = DataUtils.getCellClassName(value);
         tr.appendChild(td);
       });

@@ -372,12 +372,6 @@ textarea::placeholder { color: var(--muted-soft); }
 #tableContainer.pivoted .json-table th,
 #tableContainer.pivoted .json-table td {
   min-width: 80px;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-  word-break: break-word;
-  white-space: normal;
   line-height: 1.4;
 }
 
@@ -406,10 +400,15 @@ textarea::placeholder { color: var(--muted-soft); }
   z-index: 1;
 }
 
+/* 좁은 사이드패널에서 값이 글자 단위로 끊기지 않도록 한 줄로 두고 넘치면 말줄임.
+   전체 값은 title 툴팁으로 보여준다 (table-renderer.js). */
 .json-table td {
   padding: var(--space-3);
   border-bottom: 1px solid var(--hover-tint);
-  word-break: break-word;
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   vertical-align: top;
 }
 
