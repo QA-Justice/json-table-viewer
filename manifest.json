@@ -1,9 +1,10 @@
 {
   "name": "JSON Table Viewer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "manifest_version": 3,
   "description": "Convert JSON to table with CSV export, pivot view, and clipboard copy.",
   "permissions": ["sidePanel"],
+  "optional_permissions": ["clipboardRead"],
   "background": {
     "service_worker": "background.js"
   },

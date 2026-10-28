@@ -16,7 +16,58 @@ export class UIManager {
     this.bindFileUpload();
     this.bindGlobalEvents();
     this.initLineNumbers();
+    this.initZoom();
     this.autoFocusInput();
+  }
+
+  // 패널 전체 배율(줌) 조절 — 사이드패널에서는 크롬 확대/축소를 쓰기 어려워서 직접 제공한다.
+  // 버튼(−/+, 배율 클릭 시 100%), Ctrl + = / - / 0, Ctrl + 휠 지원. 마지막 배율은 localStorage에 기억.
+  initZoom() {
+    const STORAGE_KEY = 'jtv.zoom';
+    const LEVELS = [0.5, 0.67, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
+    const label = DOMUtils.getElement('#zoomValue');
+
+    let index = LEVELS.indexOf(1);
+    try {
+      const saved = LEVELS.indexOf(parseFloat(localStorage.getItem(STORAGE_KEY)));
+      if (saved !== -1) index = saved;
+    } catch (_) { /* 저장소를 못 쓰면 100% */ }
+
+    const apply = () => {
+      document.documentElement.style.zoom = LEVELS[index];
+      if (label) label.textContent = Math.round(LEVELS[index] * 100) + '%';
+      try { localStorage.setItem(STORAGE_KEY, LEVELS[index]); } catch (_) {}
+    };
+
+    const step = (delta) => {
+      index = Math.min(LEVELS.length - 1, Math.max(0, index + delta));
+      apply();
+    };
+    const reset = () => {
+      index = LEVELS.indexOf(1);
+      apply();
+    };
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#zoomOutBtn')) step(-1);
+      if (e.target.closest('#zoomInBtn')) step(1);
+      if (e.target.closest('#zoomValue')) reset();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+      if (e.key === '=' || e.key === '+') { e.preventDefault(); step(1); }
+      else if (e.key === '-') { e.preventDefault(); step(-1); }
+      else if (e.key === '0') { e.preventDefault(); reset(); }
+    });
+
+    document.addEventListener('wheel', (e) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      step(e.deltaY < 0 ? 1 : -1);
+    }, { passive: false });
+
+    apply();
   }
 
   // 편집기 라인 넘버 거터 — 입력/스크롤에 맞춰 갱신·동기화
@@ -61,6 +112,8 @@ export class UIManager {
   // 입력창 자동 포커스
   // 사이드패널을 새 탭(주소창이 자동 포커스된 상태)에서 열면 붙여넣기가 textarea가 아니라
   // 브라우저 URL창으로 가는 문제가 있다. 패널이 로드되거나 다시 보일 때 입력창에 포커스를 준다.
+  // 단, 크롬은 사이드패널이 주소창의 키보드 포커스를 코드로 가져가는 것을 허용하지 않는다.
+  // 그래서 패널에 포커스가 없으면 안내(#focusHint)를 보여주고, Paste 버튼으로도 붙여넣을 수 있게 한다.
   autoFocusInput() {
     const focusInput = () => {
       DOMUtils.safeDOMOperation('#jsonInput', (jsonInput) => {
@@ -76,12 +129,61 @@ export class UIManager {
       });
     };
 
+    const hint = DOMUtils.getElement('#focusHint');
+    const updateHint = () => {
+      if (hint) hint.hidden = document.hasFocus();
+    };
+    if (hint) {
+      hint.addEventListener('click', () => {
+        DOMUtils.safeDOMOperation('#jsonInput', (jsonInput) => jsonInput.focus());
+        updateHint();
+      });
+    }
+
     focusInput();
+    updateHint();
     // 패널이 다시 보이거나 창이 포커스를 받을 때 재시도
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) focusInput();
+      updateHint();
     });
-    window.addEventListener('focus', focusInput);
+    window.addEventListener('focus', () => {
+      focusInput();
+      updateHint();
+    });
+    window.addEventListener('blur', updateHint);
+  }
+
+  // 클립보드에서 JSON 붙여넣기 (Paste 버튼)
+  // 버튼을 누르면 패널이 포커스를 갖게 되므로, 주소창에 포커스가 있던 상황에서도 동작한다.
+  async pasteFromClipboard() {
+    try {
+      // 확장 프로그램에서는 clipboardRead를 optional 권한으로 두고 처음 누를 때 요청한다.
+      // (필수 권한으로 추가하면 기존 사용자의 확장이 업데이트 후 비활성화된다)
+      // permissions.request는 사용자 제스처 안에서 호출해야 하므로 await 전에 먼저 부른다.
+      if (typeof chrome !== 'undefined' && chrome.permissions) {
+        const granted = await chrome.permissions.request({ permissions: ['clipboardRead'] });
+        if (!granted) {
+          NotificationManager.showError('Clipboard permission denied. Click the input and press Ctrl+V instead.');
+          return;
+        }
+      }
+
+      const text = await navigator.clipboard.readText();
+      if (!text.trim()) {
+        NotificationManager.showError('Clipboard is empty.');
+        return;
+      }
+
+      DOMUtils.safeDOMOperation('#jsonInput', (jsonInput) => {
+        jsonInput.value = text;
+        jsonInput.focus();
+        if (this.renderLineNumbers) this.renderLineNumbers();
+        this.handleConvert();
+      });
+    } catch (error) {
+      NotificationManager.showError('Could not read the clipboard. Click the input and press Ctrl+V instead.');
+    }
   }
 
   // 변환 버튼 이벤트 바인딩
@@ -138,6 +240,9 @@ export class UIManager {
       }
       if (e.target.matches('#resetBtn')) {
         this.resetToSample();
+      }
+      if (e.target.matches('#pasteBtn')) {
+        this.pasteFromClipboard();
       }
     });
 
