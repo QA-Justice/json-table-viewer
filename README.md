@@ -12,7 +12,7 @@ JSON을 복사해서 붙여넣거나 파일로 import해서 표로 변환할 수
 
 ---
 
-![Version](https://img.shields.io/badge/Version-1.2.2-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.2.3-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 ## ✨ Features
@@ -82,7 +82,8 @@ JSON을 복사해서 붙여넣거나 파일로 import해서 표로 변환할 수
 - **Ctrl+F**: Opens custom search interface
 - **Column Headers**: Search within table column names
 - **Table Data**: Search within all table cell contents
-- **Navigation**: Use Prev/Next buttons to cycle through matches
+- **Navigation**: Enter / Shift+Enter (or F3 / Shift+F3, Prev/Next buttons) to cycle through matches; Esc to close
+- **Every match**: Finds every occurrence, including several in one cell; highlights stay in place after Pivot / Restore
 - **Highlighting**: Matched text is highlighted with color coding
 - **Match Counter**: Shows current match position and total matches
 

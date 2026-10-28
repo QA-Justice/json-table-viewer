@@ -444,6 +444,9 @@ textarea::placeholder { color: var(--muted-soft); }
 .notification-success { border-left: 3px solid var(--color-success); }
 .notification-error   { border-left: 3px solid var(--color-error); }
 
+/* 검색창이 열려 있으면 알림이 검색창을 가리지 않도록 그 아래로 내린다 */
+body.search-open .notification { top: 80px; }
+
 @keyframes slideIn {
   from { transform: translateX(8px); opacity: 0; }
   to   { transform: translateX(0);   opacity: 1; }
@@ -539,6 +542,7 @@ textarea::placeholder { color: var(--muted-soft); }
 
 .search-input {
   flex: 1;
+  min-width: 0;
   border: 1px solid var(--color-tertiary);
   outline: none;
   background: var(--surface-card);
@@ -556,9 +560,11 @@ textarea::placeholder { color: var(--muted-soft); }
   padding: calc(var(--space-2) - 1px) calc(var(--space-3) - 1px);
 }
 .search-input::placeholder { color: var(--muted-soft); }
+.search-input.no-hit { background: #FEF2F2; }
 
 .search-controls {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: var(--space-2);
 }
